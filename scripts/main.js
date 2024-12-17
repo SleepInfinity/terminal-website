@@ -35,17 +35,8 @@ async function open_terminal(){
   new_line();
 }
 
-function getDomainAndPath() {
-  const domain = window.location.hostname; // Gets the domain (e.g., example.com)
-  const path = window.location.pathname;  // Gets the path (e.g., /subpage/subdir)
-  
-  return `${domain}${path}`;
-}
-
 
 function new_line(){
-  const domainAndPath = getDomainAndPath();
-
   const p = document.createElement("p");
   const span1 = document.createElement("span");
   const span2 = document.createElement("span");
@@ -62,7 +53,6 @@ function new_line(){
   i.setAttribute("class", "fas fa-angle-right icone")
 
   const input = document.createElement("input");
-  input.setAttribute("class", "terminal-input")
   input.setAttribute("autofocus", "true");
   input.setAttribute("type", "text");
   input.setAttribute("spellcheck", "false");
@@ -114,6 +104,9 @@ async function getInputValue(){
     document.querySelectorAll("p").forEach(e => e.parentNode.removeChild(e));
     document.querySelectorAll("section").forEach(e => e.parentNode.removeChild(e));
   }
+  else if(value === "matrix"){
+    startMatrixEffect("app");
+  }
   else{
     falseValue(value);
     createText(`command not found: ${value}`)
@@ -151,18 +144,67 @@ function falseValue(value){
 function createText(text, classname){
   const p = document.createElement("p");
   
-  p.innerHTML =
-  text
-  ;
+  p.innerHTML = text;
   app.appendChild(p);
+  //typeText(p, text)
 }
 
 function createCode(code, text){
   const p = document.createElement("p");
   p.setAttribute("class", "code");
-  p.innerHTML =
- `${code} <br/><span class='text'> ${text} </span>`;
+  p.innerHTML = `${code} <br/><span class='text'> ${text} </span>`;
   app.appendChild(p);
+  
+}
+
+function startMatrixEffect(containerId) {
+  const container = document.getElementById(containerId);
+
+  if (!container) {
+    console.error(`Container with ID "${containerId}" not found.`);
+    return;
+  }
+
+  // Ensure container has relative positioning for child elements
+  container.style.position = "relative";
+  container.style.overflow = "hidden"; // Prevent overflow outside the container
+
+  const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%".split("");
+  const fontSize = 12;
+  const columns = Math.floor(container.clientWidth / fontSize);
+  const drops = Array(columns).fill(1);
+
+  // Create and append text spans for the effect
+  function draw() {
+    // Clear container's previous children
+    container.innerHTML = "";
+
+    // Loop through each column
+    for (let i = 0; i < drops.length; i++) {
+      const text = matrix[Math.floor(Math.random() * matrix.length)];
+
+      const span = document.createElement("span");
+      span.textContent = text;
+      span.style.position = "absolute";
+      span.style.left = `${i * fontSize}px`;
+      span.style.top = `${drops[i] * fontSize}px`;
+      span.style.fontSize = `${fontSize}px`;
+      span.style.color = "#0F0"; // Green color
+      span.style.fontFamily = "monospace";
+
+      container.appendChild(span);
+
+      // Reset to the top with randomness
+      if (drops[i] * fontSize > container.clientHeight && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+
+      drops[i]++;
+    }
+  }
+
+  // Start the effect
+  setInterval(draw, 50);
 }
 
 open_terminal();
