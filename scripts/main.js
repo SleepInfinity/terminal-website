@@ -6,10 +6,10 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
 app.addEventListener("keypress", async function(event){
   if(event.key === "Enter"){
     await delay(150);
-   getInputValue();
+    getInputValue();
    
     removeInput();
-    await delay(150);
+    //await delay(150);
     new_line();
   }
 });
@@ -35,16 +35,24 @@ async function open_terminal(){
   new_line();
 }
 
+function getDomainAndPath() {
+  const domain = window.location.hostname; // Gets the domain (e.g., example.com)
+  const path = window.location.pathname;  // Gets the path (e.g., /subpage/subdir)
+  
+  return `${domain}${path}`;
+}
+
 
 function new_line(){
-  
+  const domainAndPath = getDomainAndPath();
+
   const p = document.createElement("p");
   const span1 = document.createElement("span");
   const span2 = document.createElement("span");
   p.setAttribute("class", "path")
-  p.textContent = "# user";
-  span1.textContent = " in";
-  span2.textContent = " ~/heber-leonard";
+  p.textContent = `visitor@${window.location.hostname}`;
+  span1.textContent = `:${window.location.pathname}`;
+  span2.textContent = "$";
   p.appendChild(span1);
   p.appendChild(span2);
   app.appendChild(p);
@@ -52,12 +60,17 @@ function new_line(){
   div.setAttribute("class", "type")
   const i = document.createElement("i");
   i.setAttribute("class", "fas fa-angle-right icone")
+
   const input = document.createElement("input");
+  input.setAttribute("class", "terminal-input")
+  input.setAttribute("autofocus", "true");
+  input.setAttribute("type", "text");
+  input.setAttribute("spellcheck", "false");
+
   div.appendChild(i);
   div.appendChild(input);
   app.appendChild(div);
   input.focus();
-  
 }
 
 function removeInput(){
