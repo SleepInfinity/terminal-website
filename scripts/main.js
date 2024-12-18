@@ -74,30 +74,31 @@ async function getInputValue(){
   if(value === "all"){
     trueValue(value);
     
-    createCode("projects", "My github page with my projects. Follow me there ;)");
+    createCode("projects", "My github page with my projects.");
     createCode("about me", "Who am i and what do i do.");
     createCode("social -a", "All my social networks.");
+    createCode("matrix", "Display a matrix effect on the terminal.");
     createCode("clear", "Clean the terminal.");
     
   }
   else if(value === "projects"){
     trueValue(value);
-    createText("<a href='https://github.com/heberleonard2' target='_blank'><i class='fab fa-github white'></i> github.com/heberleonard2</a>")
+    createText("<a href='https://github.com/SleepInfinity' target='_blank'><i class='fab fa-github white'></i> github.com/SleepInfinity</a>")
   }
   else if(value === "about me"){
     trueValue(value);
-    createText("Oi, meu nome é Héber ;)")
-    createText("Desenvolvedor atualmente focado em todo o ecossistema Javascript. Utilizando principalmente a stack <span class='blue'>Node, React e React Native </span>por permitir criar aplicações de forma descomplicada e produtiva.")
+    createText("Hi, my name is Youns.")
+    createText("I'm specialized in computer networks, IoT, and programming. I have experience in Python, C, C++, JavaScript, and Linux, which I use to develop innovative tech projects like bots and IoT applications.")
   }
   else if(value === "social -a"){
     trueValue(value);
-    createText("<a href='https://github.com/heberleonard2' target='_blank'><i class='fab fa-github white'></i> github.com/heberleonard2</a>")
-    createText("<a href='https://www.linkedin.com/in/heber-leonard/' target='_blank'><i class='fab fa-linkedin-in white'></i> linkedin.com/in/heber-leonard</a>")
-    createText("<a href='https://www.instagram.com/heber_leonard/' target='_blank'><i class='fab fa-instagram white'></i> instagram.com/heber_leonard</a>")
+    createText("<a href='https://github.com/SleepInfinity' target='_blank'><i class='fab fa-github white'></i> github.com/SleepInfinity</a>")
+    createText("<a href='https://www.t.me/DevSleep/' target='_blank'><i class='fab fa-telegram white'></i> t.me/DevSleep/</a>")
+    createText("<a href='https://www.instagram.com/y0nls/' target='_blank'><i class='fab fa-instagram white'></i> instagram.com/y0nls</a>")
   }
   else if(value === "social"){
     trueValue(value);
-    createText("Didn't you mean: social -a?")
+    createText("Did you mean: social -a?")
   }
   
   else if(value === "clear"){
@@ -105,11 +106,14 @@ async function getInputValue(){
     document.querySelectorAll("section").forEach(e => e.parentNode.removeChild(e));
   }
   else if(value === "matrix"){
+    removeInput();
+    document.querySelectorAll("p").forEach(e => e.parentNode.removeChild(e));
+    document.querySelectorAll("section").forEach(e => e.parentNode.removeChild(e));
     startMatrixEffect("app");
   }
   else{
     falseValue(value);
-    createText(`command not found: ${value}`)
+    createErrorText(`command not found: ${value}`)
   }
 }
 
@@ -157,6 +161,12 @@ function createCode(code, text){
   
 }
 
+function createErrorText(text) {
+  const p = document.createElement("p");
+  p.innerText = text;
+  app.appendChild(p);
+}
+
 function startMatrixEffect(containerId) {
   const container = document.getElementById(containerId);
 
@@ -165,21 +175,31 @@ function startMatrixEffect(containerId) {
     return;
   }
 
-  // Ensure container has relative positioning for child elements
   container.style.position = "relative";
-  container.style.overflow = "hidden"; // Prevent overflow outside the container
+  container.style.overflow = "hidden";
+  container.style.color = "green"; // Default text color
 
   const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%".split("");
-  const fontSize = 12;
+  const fontSize = 12; // Size of the characters
   const columns = Math.floor(container.clientWidth / fontSize);
-  const drops = Array(columns).fill(1);
+  const drops = Array(columns).fill(1); // Initial Y positions for each column
 
-  // Create and append text spans for the effect
+  let intervalId;
+  let animationFrameId;
+
   function draw() {
-    // Clear container's previous children
-    container.innerHTML = "";
+    const fadeDiv = document.createElement("div");
+    fadeDiv.style.position = "absolute";
+    fadeDiv.style.top = "0";
+    fadeDiv.style.left = "0";
+    fadeDiv.style.width = "100%";
+    fadeDiv.style.height = "100%";
+    fadeDiv.style.backgroundColor = "rgba(0, 0, 0, 0.05)";
+    fadeDiv.style.pointerEvents = "none";
+    container.appendChild(fadeDiv);
 
-    // Loop through each column
+    setTimeout(() => fadeDiv.remove(), 50);
+
     for (let i = 0; i < drops.length; i++) {
       const text = matrix[Math.floor(Math.random() * matrix.length)];
 
@@ -189,22 +209,31 @@ function startMatrixEffect(containerId) {
       span.style.left = `${i * fontSize}px`;
       span.style.top = `${drops[i] * fontSize}px`;
       span.style.fontSize = `${fontSize}px`;
-      span.style.color = "#0F0"; // Green color
-      span.style.fontFamily = "monospace";
-
+      span.style.color = "#0F0"; // Bright green
       container.appendChild(span);
 
-      // Reset to the top with randomness
+      setTimeout(() => span.remove(), 1000);
+
       if (drops[i] * fontSize > container.clientHeight && Math.random() > 0.975) {
         drops[i] = 0;
       }
 
-      drops[i]++;
+      drops[i]++; // Increment Y position
     }
+    animationFrameId = requestAnimationFrame(draw);
   }
 
-  // Start the effect
-  setInterval(draw, 50);
+  //intervalId = setInterval(draw, 50);
+  draw();
+
+  document.addEventListener("keydown", function (event) {
+    if ((event.ctrlKey && event.key === "c") || event.key.toLowerCase() === "q") {
+      //clearInterval(intervalId);
+      cancelAnimationFrame(animationFrameId);
+      container.innerHTML = "";
+      new_line();
+    }
+  });
 }
 
 open_terminal();
